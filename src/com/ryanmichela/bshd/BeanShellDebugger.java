@@ -24,9 +24,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 import bsh.Interpreter;
 
 public class BeanShellDebugger extends JavaPlugin {
-
-	private Interpreter bsh;
-	private Logger log;
+	public static java.io.PrintStream t = System.out;
+	public Interpreter bsh;
+	public Logger log;
+	
+	
+	public static void main(String[] args) {
+		// For Eclipse to create a launch configuration so I can export the project as a runnable jar, needed to include beanshell in the jar
+		t.println("This main method does nothing but print this message.");
+	}
 	
 	@Override
 	public void onDisable() {}
@@ -43,7 +49,7 @@ public class BeanShellDebugger extends JavaPlugin {
 		
 		bsh = new Interpreter();
 		try {
-			bsh.set("portnum", 1337);
+			//bsh.set("portnum", 1337);
 			
 			// Set up debug environment with globals
 			bsh.set("pluginLoader", getPluginLoader());
@@ -72,12 +78,12 @@ public class BeanShellDebugger extends JavaPlugin {
 			}
 			
 			bsh.eval("setAccessibility(true)"); // turn off access restrictions
-			bsh.eval("server(portnum)");
-			log.info("[bshd] BeanShell web console at http://localhost:1337");
-			log.info("[bshd] BeanShell telnet console at localhost:1338");
+			//bsh.eval("server(portnum)");
+			//log.info("[bshd] BeanShell web console at http://localhost:1337");
+			//log.info("[bshd] BeanShell telnet console at localhost:1338");
 			
 			// Register the bshd command
-			getCommand("bshd").setExecutor(new BshdCommand());
+			getCommand("bshd").setExecutor(new BshdCommand(bsh));
 			
 		} catch (Exception e) {
 			log.severe("[bshd] Error in BeanShell. " + e.toString());

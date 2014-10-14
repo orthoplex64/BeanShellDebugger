@@ -1,10 +1,11 @@
-name: BeanShell Debugger
+name: BeanShellDebugger
 main: com.ryanmichela.bshd.BeanShellDebugger
-version: 1
-website: https://github.com/rmichela/BeanShellDebugger
-author: Ryan Michela
+version: 1.0.1
+website: https://github.com/orthoplex64/BeanShellDebugger
+authors: [Ryan Michela, orthoplex64]
+permissions:
+  beanshelldebugger.shell:
+    default: false
 commands:
   bshd:
-    description: Executes a java statement and returns the results to the console.
-    usage: |
-           /<command> java code;
+    description: Executes a java statement and returns the results.
