@@ -1,6 +1,6 @@
 name: BeanShellDebugger
 main: com.ryanmichela.bshd.BeanShellDebugger
-version: 1.0.1
+version: 1.0.0
 website: https://github.com/orthoplex64/BeanShellDebugger
 authors: [Ryan Michela, orthoplex64]
 permissions:
