@@ -21,33 +21,40 @@ package com.ryanmichela.bshd;
 //import java.net.Socket;
 //import java.net.SocketTimeoutException;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.plugin.Plugin;
 
 import bsh.Interpreter;
 
 public class BshdCommand implements CommandExecutor {
+	private Plugin plugin;
 	private Interpreter bsh;
 	
 	
-	public BshdCommand(Interpreter bsh) {
+	public BshdCommand(Plugin plugin, Interpreter bsh) {
+		this.plugin = plugin;
 		this.bsh = bsh;
 	}
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("bshd")) {
-			if (!sender.hasPermission("beanshelldebugger.shell")) {
-				sender.sendMessage("You lack the permission beanshelldebugger.shell");
-				return true;
+			if (!isAllowedPlayer(sender)) {
+				sender.sendMessage("You are not allowed to use this command.");
+				return false;
 			}
 			// build the code string
 			StringBuilder sb = new StringBuilder();
-			for(int i = 0; i < args.length; i++) {
+			for (int i = 0; i < args.length; i++) {
 				sb.append(args[i]);
 				if (i + 1 < args.length) {
 					sb.append(" ");
@@ -93,10 +100,32 @@ public class BshdCommand implements CommandExecutor {
 				StringWriter writer = new StringWriter();
 				thr.printStackTrace(new PrintWriter(writer, true));
 				sender.sendMessage("\u00a7cError: \u00a7f" + writer.toString());
+				return true;
 			}
 			return true;
 		}
 		return false;
 	}
-
+	
+	public boolean isAllowedPlayer(CommandSender sender) {
+		if (sender instanceof ConsoleCommandSender) {
+			return true;
+		}
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(new File(plugin.getDataFolder(), "allowedPlayers.txt")));
+			for (String line = reader.readLine(); line != null; line = reader.readLine()) {
+				if (sender.getName().equalsIgnoreCase(line)) {
+					reader.close();
+					return true;
+				}
+			}
+			reader.close();
+			return false;
+		} catch (Throwable thr) {
+			StringWriter writer = new StringWriter();
+			thr.printStackTrace(new PrintWriter(writer, true));
+			sender.sendMessage("\u00a7cError: \u00a7f" + writer.toString());
+			return false;
+		}
+	}
 }

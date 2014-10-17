@@ -16,6 +16,7 @@
 package com.ryanmichela.bshd;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.logging.Logger;
 
 import org.bukkit.plugin.Plugin;
@@ -43,8 +44,18 @@ public class BeanShellDebugger extends JavaPlugin {
 		log.info("[bshd] Starting BeanShell Debugger");
 		
 		// Initialize the data folder
-		if(!getDataFolder().exists()) {
-			getDataFolder().mkdir();
+		File dataFolder = getDataFolder();
+		if (!dataFolder.exists()) {
+			dataFolder.mkdir();
+		}
+		File allowedPlayersFile = new File(dataFolder, "allowedPlayers.txt");
+		if (!allowedPlayersFile.exists()) {
+			log.info("[bshd] No allowedPlayers.txt found; creating one");
+			try {
+				allowedPlayersFile.createNewFile();
+			} catch (IOException exc) {
+				exc.printStackTrace();
+			}
 		}
 		
 		bsh = new Interpreter();
@@ -65,14 +76,14 @@ public class BeanShellDebugger extends JavaPlugin {
 			}
 			
 			// Source any .bsh files in the plugin directory
-			if(getDataFolder().listFiles() != null) {
-				for(File f : getDataFolder().listFiles()) {
-					if(f.getName().endsWith(".bsh")) {
-						log.info("[bshd] Sourcing file " + f.getName());
-						bsh.source(f.getPath());
-					}
-					else {
-						log.info("*** skipping " + f.getAbsolutePath());
+			if (dataFolder.listFiles() != null) {
+				for (File file : dataFolder.listFiles()) {
+					String fileName = file.getName();
+					if (fileName.endsWith(".bsh")) {
+						log.info("[bshd] Sourcing file " + fileName);
+						bsh.source(file.getPath());
+					} else {
+						log.info("*** skipping " + file.getAbsolutePath());
 					}
 				}
 			}
@@ -83,7 +94,7 @@ public class BeanShellDebugger extends JavaPlugin {
 			//log.info("[bshd] BeanShell telnet console at localhost:1338");
 			
 			// Register the bshd command
-			getCommand("bshd").setExecutor(new BshdCommand(bsh));
+			getCommand("bshd").setExecutor(new BshdCommand(this, bsh));
 			
 		} catch (Exception e) {
 			log.severe("[bshd] Error in BeanShell. " + e.toString());
