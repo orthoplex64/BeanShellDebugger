@@ -1,6 +1,6 @@
 name: BeanShellDebugger
 main: com.ryanmichela.bshd.BeanShellDebugger
-version: 1.0.1
+version: 1.0.2
 website: https://github.com/orthoplex64/BeanShellDebugger
 authors: [Ryan Michela, orthoplex64]
 # permissions:
@@ -9,3 +9,5 @@ authors: [Ryan Michela, orthoplex64]
 commands:
   bshd:
     description: Executes a java statement and returns the results.
+  bshdopt:
+    description: Toggle one of your personal options for BeanShellDebugger.
